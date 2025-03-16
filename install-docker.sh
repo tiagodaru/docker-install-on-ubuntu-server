@@ -6,12 +6,12 @@ sudo apt update || { echo "Falha ao atualizar pacotes"; exit 1; }
 # Instala dependências necessárias
 sudo apt install -y apt-transport-https ca-certificates curl software-properties-common || { echo "Falha ao instalar dependências"; exit 1; }
 
-# Adiciona a chave GPG oficial do Docker
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add - || { echo "Falha ao adicionar chave GPG"; exit 1; }
+# Adiciona a chave GPG oficial do Docker (usando o método moderno)
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/docker-archive-keyring.gpg || { echo "Falha ao adicionar chave GPG"; exit 1; }
 
 # Adiciona o repositório Docker às fontes APT
 UBUNTU_VERSION=$(lsb_release -cs)
-sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $UBUNTU_VERSION stable" || { echo "Falha ao adicionar repositório Docker"; exit 1; }
+echo "deb [arch=amd64 signed-by=/etc/apt/trusted.gpg.d/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $UBUNTU_VERSION stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null || { echo "Falha ao adicionar repositório Docker"; exit 1; }
 
 # Atualiza o banco de dados de pacotes com os pacotes Docker
 sudo apt update || { echo "Falha ao atualizar pacotes Docker"; exit 1; }
